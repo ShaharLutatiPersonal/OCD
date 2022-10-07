@@ -38,25 +38,25 @@ parser.add_argument(
     '-l', '--learning_rate', type=float, default=2e-4, help='learning rate, default <2e-4>')
 parser.add_argument(
     '-pb', '--backbone_path', type=str, default = './base_models/checkpoint_tinynerf.pt',
-    help='checkpoint path for backbone, default <>')
+    help='checkpoint path for backbone, default </base_models/checkpoint_tinynerf.pt>')
 parser.add_argument(
     '-pc', '--config_path', type=str, default = './configs/train_tinynerf.json',
-    help='config path, default <''>')
+    help='config path, default </configs/train_tinynerf.json>')
 parser.add_argument(
     '-ptb', '--tensorboard_path', type=str, default = './logs',
     help='config path, default <./logs>')
 parser.add_argument(
     '-pdtr', '--data_train_path', type=str, default = './data/tiny_nerf_data.npz',
-    help='training data path, default <''>')
+    help='training data path, default <''/data/tiny_nerf_data.npz''>')
 parser.add_argument(
     '-pdts', '--data_test_path', type=str, default = '/data',
-    help='test data path, default <''>')
+    help='test data path, default <'/data'>')
 parser.add_argument(
     '-dt', '--datatype', type=str, default = 'tinynerf',
-    help='datatype - tinynerf or not, default <>')
+    help='datatype - tinynerf or not, default <tinynerf>')
 parser.add_argument(
     '-prc', '--precompute_all', type=int, default = 1,
-    help='precomputation of overfitting to save time, default <0>')
+    help='precomputation of overfitting to save time, default <1>')
 
 
 ##########################################################################################################
