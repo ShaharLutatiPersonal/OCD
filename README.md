@@ -14,11 +14,12 @@ MNIST is on it's way too.
 1. You can use either the example of tinyNerf as in the code (and also train it by yourself) or take Lenet5 model.
 Please see the Lenet5 model, for full explantion to how export the latent input and output for the selected layer.
 The output should be:
-predicted_labels, h = base_model(); where h is I(x) as in the paper.
-2. For tinyNerf it is suggested to use the flag --precompute_all, for Lenet5 not.
-3. Specific configs are in config folder, although the generic config as in the paper will work too. 
-The specific configs are optimizied for small footprint to allow low-end devices to run the model.
-4. Make sure you correctly change the name of the selected layer if other network is employed.
+predicted_labels, h = base_model(); <br />where h is I(x) as in the paper.
+***It is very important to detach() the latent variables in the forward pass of the base model, and also use "deepcopy" function from copy***
+2. For tinyNerf it is suggested to use the flag --precompute_all, for Lenet5 not.<br />
+3. Specific configs are in config folder, although the generic config as in the paper will work too. <br />
+The specific configs are optimizied for small footprint to allow low-end devices to run the model.<br />
+4. Make sure you correctly change the name of the selected layer if other network is employed.<br />
 
 ## Examples:
 **1. for training nerf-OCD** <br />
