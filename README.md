@@ -28,6 +28,8 @@ python run_func_OCD.py -e 1 -t 0 -pd ./checkpoints/model_ocd_tinynerf.pt -ps ./c
 
 
 ------- Will be available in the next days -------------------
+
+## Future
 3. for training lenet5-OCD
 python run_func_OCD.py -e 0 -pb ./checkpoints/checkpoint_lenet5.pth -pc ./configs/train_mnist.json -pdtr ./data/mnist -pdts ./data/mnist -dt mnist -prc 0
 
