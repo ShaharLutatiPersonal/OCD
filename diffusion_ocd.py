@@ -217,37 +217,66 @@ class multiloss(nn.Module):
 
 
 class Model_Scale(nn.Module):
-    def __init__(self, ch=32, in_dim=84, out_dim=120):
+    def __init__(self, config):
         super().__init__()
-        ch = ch
+        self.config = config
+        ch = config.diffusion.scale.ch
+        in_dim = config.diffusion.scale.in_dim
+        out_dim = config.diffusion.scale.out_dim
         self.mlp = nn.Sequential(nn.Linear(in_dim,ch),nn.SiLU(),nn.Linear(ch,2*ch),nn.SiLU(),nn.Linear(2*ch,4*ch))
         self.mlp_latin = nn.Sequential(nn.Linear(out_dim,ch),nn.SiLU(),nn.Linear(ch,2*ch),nn.SiLU(),nn.Linear(2*ch,4*ch))
         self.mlp_scale = nn.Sequential(nn.Linear(8*ch,4*ch),nn.SiLU(),nn.Linear(4*ch,ch),nn.SiLU(),nn.Linear(ch,1),nn.Sigmoid())
-    def forward(self, lat):
+    def forward(self, lat, outin):
         #assert x.shape[2] == x.shape[3] == self.resolutio
         # timestep embedding
-        lat,latin = lat
+        if 'nerf' not in self.config.model.name:
+            lat,latin = lat
+        else:
+            latin = outin
         latent = self.mlp(lat).mean(0).unsqueeze(0)
         latent_in = self.mlp_latin(latin).mean(0).unsqueeze(0)
         scale = self.mlp_scale(torch.cat((latent,latent_in),1))
         return scale
-    
+    def load_my_state_dict(self, state_dict):
+        own_state = self.state_dict()
+        for name, param in state_dict.items():
+            if (name not in own_state):
+                    continue
+            if (own_state[name].shape != param.shape):
+                continue
+            if isinstance(param, torch.nn.Parameter):
+                #print(name)
+                # backwards compatibility for serialized parameters
+                param = param.data
+            #print(name)
+            own_state[name].copy_(param)
 
 class Model(nn.Module):
-    def __init__(self, nch=128, out_ch=1, ch_mult=[1, 2, 2, 2, 4], dim_in=84, dim_lat_out=120,dim_output=10):
+    def __init__(self, config=''):
         super().__init__()
+        nch=config.diffusion.nch
+        out_ch=config.diffusion.out_ch
+        ch_mult=config.diffusion.ch_mult
+        dim_in=config.diffusion.dim_in
+        dim_lat_out=config.diffusion.dim_lat_out
+        dim_output=config.diffusion.dim_output
         ch, out_ch, ch_mult = nch, out_ch, tuple(ch_mult)
         num_res_blocks = 2
         attn_resolutions = [16,]
-        dropout = 0.2
+        dropout = config.diffusion.dropout
         in_channels = 1
         resolution = 128
         resamp_with_conv = True
         num_timesteps = 1000
-        self.mlp = nn.Sequential(nn.Linear(dim_in,ch),nn.SiLU())
-        self.mlp_latin = nn.Sequential(nn.Linear(dim_lat_out,ch),nn.SiLU())
-        self.mlp_out = nn.Sequential(nn.Linear(dim_output,2*ch),nn.SiLU())
-        self.codeout = nn.Sequential(nn.Linear(4*ch,4*ch))
+        self.config = config
+        if 'nerf' not in self.config.model.name:
+            self.mlp = nn.Sequential(nn.Linear(dim_in,4*ch),nn.SiLU())
+            self.mlp_out = nn.Sequential(nn.Linear(dim_output,4*ch),nn.SiLU())
+            self.mlp_latin = nn.Sequential(nn.Linear(dim_lat_out,4*ch),nn.SiLU())
+            self.codeout = nn.Sequential(nn.Linear(4*ch,4*ch))
+        else:
+            self.mlp = nn.Sequential(nn.Linear(dim_in,4*ch))
+            self.mlp_out = nn.Sequential(nn.Linear(dim_output,4*ch))
         self.ch = ch
         self.temb_ch = self.ch*4
         self.num_resolutions = len(ch_mult)
@@ -343,16 +372,20 @@ class Model(nn.Module):
 
     def forward(self, x, lat, out, t):
         x = x.unsqueeze(1)
-        lat,latin = lat
-        latent = self.mlp(lat).mean(0).unsqueeze(0)
+        if 'nerf' not in self.config.model.name:
+            lat,latin = lat
+            latent = self.mlp(lat).mean(0).unsqueeze(0)
+            latent_in = self.mlp_latin(latin).mean(0).unsqueeze(0)
+            out_in = self.mlp_out(out)
+            latent = self.codeout(latent+latent_in+out_in)
+        else:
+            out_in = self.mlp_out(out)
+            latent = self.mlp(lat) + out_in
         
-        latent_in = self.mlp_latin(latin).mean(0).unsqueeze(0)
-        out_in = self.mlp_out(out)
-        latcode = self.codeout(torch.cat((latent,latent_in,out_in),1))
         temb = get_timestep_embedding(t, self.ch)
         temb = self.temb.dense[0](temb)
         temb = nonlinearity(temb)
-        temb = self.temb.dense[1](temb)+latcode
+        temb = self.temb.dense[1](temb)+latent
         # downsampling
         hs = [self.conv_in(x)]
         for i_level in range(self.num_resolutions):
@@ -394,3 +427,16 @@ class Model(nn.Module):
         a = F.linear(hinfirst,ws,fc1b)
         a  = F.relu(a)
         return F.mse_loss(a,hlast)
+    def load_my_state_dict(self, state_dict):
+        own_state = self.state_dict()
+        for name, param in state_dict.items():
+            if (name not in own_state):
+                    continue
+            if (own_state[name].shape != param.shape):
+                continue
+            if isinstance(param, torch.nn.Parameter):
+                #print(name)
+                # backwards compatibility for serialized parameters
+                param = param.data
+            #print(name)
+            own_state[name].copy_(param)

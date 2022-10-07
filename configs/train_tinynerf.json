@@ -1,0 +1,39 @@
+{
+    "training": {
+        "epochs": 100000,
+        "grad_accum": 8,
+        "grad_clip": 1.0,
+        "loss": "mse"
+    },
+    "model": {
+        "weight_name": "layer1",
+        "name":"tinynerf"
+    },
+    "checkpoint": {
+        "checkpoint_path": "",
+        "n_checkpoint": 100
+    },
+    "diffusion": {
+        "dropout": 0.2,
+        "diffusion_num_steps": 1000,
+        "diffusion_num_steps_eval": 10,
+        "nch": 64,
+        "out_ch": 1,
+        "ch_mult": [1,2,2,4],
+        "dim_in": 128,
+        "dim_lat_out": 1,
+        "dim_output": 1000,
+        "scale":{
+            "ch": 32, 
+            "in_dim": 128,
+            "out_dim": 1000
+        }
+
+    },
+    "overfitting": {
+        "lr_overfitting": 5e-3,
+        "n_overfitting": 10
+    }
+
+}
+
