@@ -3,7 +3,9 @@ import torch.nn as nn
 import numpy as np
 from nerf_utils.nerf import cumprod_exclusive, get_minibatches, get_ray_bundle, positional_encoding
 from nerf_utils.tiny_nerf import VeryTinyNerfModel
+from torchvision.datasets import mnist
 from torchvision import transforms
+import Lenet5
 from torch.utils.data import DataLoader
 from torchvision.transforms import ToTensor
 from copy import deepcopy
@@ -65,7 +67,28 @@ def wrapper_dataset(config, args, device):
         batch['output'] = testimg
         test_ds = [batch]
     elif args.datatype == 'mnist':
-        "will be release soon"
+        model = Lenet5.NetOriginal()
+        train_transform = transforms.Compose(
+                            [
+                            transforms.ToTensor()
+                            ])
+        train_dataset = mnist.MNIST(
+                "\data\mnist", train=True, download=True, transform=ToTensor())
+        test_dataset = mnist.MNIST(
+                "\data\mnist", train=False, download=True, transform=ToTensor())
+        train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True)
+        test_loader = DataLoader(test_dataset, batch_size=1)
+        train_ds, test_ds = [],[]
+        for idx, data in enumerate(train_loader):
+            train_x, train_label = data[0], data[1]
+            train_x = train_x[:,0,:,:].unsqueeze(1)
+            batch = {'input':train_x,'output':train_label}
+            train_ds.append(deepcopy(batch))
+        for idx, data in enumerate(test_loader):
+            train_x, train_label = data[0], data[1]
+            train_x = train_x[:,0,:,:].unsqueeze(1)
+            batch = {'input':train_x,'output':train_label}
+            test_ds.append(deepcopy(batch))
     else:
         "implement on your own"
         pass
