@@ -5,7 +5,7 @@
 We present a dynamic model in which the weights are conditioned on an input sample x and are learned to match those that would be obtained by finetuning a base model on x and its label y. This mapping between an input sample and network weights is shown to be approximated by a linear transformation of the sample distribution, which suggests that a denoising diffusion model can be suitable for this task. The diffusion model we therefore employ focuses on modifying a single layer of the base model and is conditioned on the input, activations, and output of this layer. Our experiments demonstrate the wide applicability of the method for **Image Classification**, **3D Reconstruction**, **Tabular Data**, and **Speech Separation**.
 
 ## Updates 
-07.10.22 - tinyNeRF is online! 💥💥💥
+07.10.22 - tinyNeRF is online! 💥💥💥<br />
 11.10.22 - LeNet5 (MNIST) is online! :100: :100: :100:
 ## Setup
 1. Clone the repo to your local machine.
