@@ -3,7 +3,7 @@
         "epochs": 100000,
         "grad_accum": 8,
         "grad_clip": 1.0,
-        "loss": "bce"
+        "loss": "ce"
     },
     "model": {
         "weight_name": "fc1",
