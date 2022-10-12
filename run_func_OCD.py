@@ -90,7 +90,7 @@ model.load_state_dict(torch.load(module_path))
 model = model.to(device)
 if config.training.loss == 'mse':
     opt_error_loss = torch.nn.MSELoss()
-elif config.training.loss == 'bce':
+elif config.training.loss == 'ce':
     opt_error_loss = torch.nn.CrossEntropyLoss()
 elif config.training.loss == 'own':
     # Change according to desired objective
