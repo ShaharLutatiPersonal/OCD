@@ -50,7 +50,7 @@ parser.add_argument(
     help='training data path, default <''/data/tiny_nerf_data.npz''>')
 parser.add_argument(
     '-pdts', '--data_test_path', type=str, default = '/data',
-    help='test data path, default <'/data'>')
+    help='test data path, default <''/data''>')
 parser.add_argument(
     '-dt', '--datatype', type=str, default = 'tinynerf',
     help='datatype - tinynerf or not, default <tinynerf>')

@@ -5,7 +5,10 @@ import torch.nn.functional as F
 from nerf_utils.tiny_nerf import run_one_iter_of_tinynerf
 from nerf_utils.nerf import cumprod_exclusive, get_minibatches, get_ray_bundle, positional_encoding
 from nerf_utils.tiny_nerf import VeryTinyNerfModel
-betas = torch.linspace(1e-6,1e-2,1000).cuda()
+
+betas = torch.linspace(1e-6,1e-2,1000)
+if torch.cuda.is_available():
+    betas = betas.cuda()
 class ConfigWrapper(object):
     """
     Wrapper dict class to avoid annoying key dict indexing like:
