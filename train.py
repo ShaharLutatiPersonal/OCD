@@ -8,6 +8,7 @@ from ema import EMAHelper
 import torchvision
 import torch.nn as nn
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
 class NoiseModel(nn.Module):
     def __init__(self):
         super().__init__()
@@ -17,10 +18,13 @@ class NoiseModel(nn.Module):
     def forward(self, x):
         out = self.vgg(x)
         return out
+
 noise_model = NoiseModel().to(device)
+
 def vgg_encode(x):
     with torch.no_grad():
         return noise_model(x.unsqueeze(0).permute(0,3,1,2).contiguous())
+
 def train(args, config, optimizer, optimizer_scale,
         device, diffusion_model, scale_model,
         model,  train_loader, padding, mat_shape,

@@ -1,0 +1,38 @@
+{
+    "training": {
+        "epochs": 100000,
+        "grad_accum": 8,
+        "grad_clip": 1.0,
+        "loss": "ce"
+    },
+    "model": {
+        "weight_name": "fc2",
+        "name":"vgg"
+    },
+    "checkpoint": {
+        "checkpoint_path": "./checkpoints-eff.pt",
+        "n_checkpoint": 1
+    },
+    "diffusion": {
+        "dropout": 0.4,
+        "diffusion_num_steps": 1000,
+        "diffusion_num_steps_eval": 10,
+        "nch": 128,
+        "out_ch": 1,
+        "ch_mult": [1, 1, 2, 2, 4, 4],
+        "dim_in": 84,
+        "dim_lat_out": 120,
+        "dim_output": 10,
+        "scale":{
+            "ch": 128, 
+            "in_dim": 84,
+            "out_dim": 120
+        }
+
+    },
+    "overfitting": {
+        "lr_overfitting": 5e-4,
+        "n_overfitting": 3
+    }
+}
+

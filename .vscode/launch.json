@@ -1,0 +1,31 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "args": [
+        "-e","0",
+        "-pb",
+        "./checkpoints/checkpoint_lenet5.pth",
+        "-pc",
+        "./configs/train_mnist.json",
+        "-pdtr",
+        "./data/mnist",
+        "-pdts",
+        "./data/mnist",
+        "-dt",
+        "vgg",
+        "-prc",
+        "0",
+      ],
+      "justMyCode": true
+    }
+  ]
+}
