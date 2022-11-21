@@ -4,6 +4,7 @@ import numpy as np
 from nerf_utils.nerf import cumprod_exclusive, get_minibatches, get_ray_bundle, positional_encoding
 from nerf_utils.tiny_nerf import VeryTinyNerfModel
 from torchvision.datasets import mnist, imagenet
+from torchvision.datasets import FashionMNIST
 from torchvision import transforms
 from torchvision.models import efficientnet_b0
 import torchvision.models
@@ -74,12 +75,18 @@ def wrapper_dataset(config, args, device):
                             [
                             transforms.ToTensor()
                             ])
-        train_dataset = mnist.MNIST(
-                "\data\mnist", train=True, download=True, transform=ToTensor())
-        test_dataset = mnist.MNIST(
-                "\data\mnist", train=False, download=True, transform=ToTensor())
-        train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True)
-        test_loader = DataLoader(test_dataset, batch_size=1)
+
+        train_ds = FashionMNIST("fashdata", train=True, download=True, transform=ToTensor())
+        train_loader = DataLoader(train_ds, batch_size=1, shuffle=True)
+        test_ds = FashionMNIST("fashdata", train=False, download=True, transform=ToTensor())
+        test_loader = DataLoader(train_ds,batch_size=1)
+
+        # train_dataset = mnist.MNIST(
+        #         "\data\mnist", train=True, download=True, transform=ToTensor())
+        # test_dataset = mnist.MNIST(
+        #         "\data\mnist", train=False, download=True, transform=ToTensor())
+        # train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True)
+        # test_loader = DataLoader(test_dataset, batch_size=1)
         train_ds, test_ds = [],[]
         for idx, data in enumerate(train_loader):
             train_x, train_label = data[0], data[1]
@@ -91,13 +98,14 @@ def wrapper_dataset(config, args, device):
             train_x = train_x[:,0,:,:].unsqueeze(1)
             batch = {'input':train_x,'output':train_label}
             test_ds.append(deepcopy(batch))
-    elif args.datatype == 'vgg':
+    elif args.datatype == 'fmix':
         model = torchvision.models.vgg11(pretrained=True)
         train_transform = transforms.Compose(
                     [
                     transforms.ToTensor()
                     ])
         imagenet.ImageNet()
+
         train_dataset = mnist.MNIST(
                 "\data\mnist", train=True, download=True, transform=ToTensor())
         test_dataset = mnist.MNIST(
