@@ -18,13 +18,13 @@ from FMix.models import ResNet18
 
 model = ResNet18(nc=1)
 model_file = "./base_models/model_1_FMIX_fashion.pt"
-state = torch.load(model_file, map_location="cpu")
+state = torch.load(model_file)
 # t = Trial(model).load_state_dict(state)
 model.load_state_dict(state["model"])
 train_ds = FashionMNIST("fashdata", train=True, download=True, transform=ToTensor())
 train_loader = DataLoader(train_ds, batch_size=1, shuffle=True)
 loss = torch.nn.CrossEntropyLoss()
-my_block_calc = block_selector.block_entropy_calc(model, train_loader, loss, device="cpu")
+my_block_calc = block_selector.block_entropy_calc(model, train_loader, loss)
 result = my_block_calc.forward()
 x = np.array([])
 print(result)
