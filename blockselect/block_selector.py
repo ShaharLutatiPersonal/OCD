@@ -67,7 +67,7 @@ class block_entropy_calc(nn.Module):
                         except StopIteration:
                             self.gen_inputs = iter(self.loader)
                             gen_input,c = next(self.gen_inputs)
-                        output = self.net(gen_input) # This part should be changed for other architecture
+                        output = self.net(gen_input.cuda()) # This part should be changed for other architecture
                         loss.append(self.loss(output,c).item())
                     self.H_max[i] = self.calculate_Hmax(loss,self.testing_vec,self.H_max[i])
                 print('block {} , {}/{}'.format(block,i,len(self.names)-1))
