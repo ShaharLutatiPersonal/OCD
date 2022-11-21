@@ -16,9 +16,12 @@ from FMix.models import ResNet18
 # x = np.array([])
 # np.save("./block_npz", x)
 
-model = ResNet18(nc=1)
+model = ResNet18(nc=1).cuda()
 model_file = "./base_models/model_1_FMIX_fashion.pt"
-state = torch.load(model_file)
+if(torch.cuda.is_available()):
+  state = torch.load(model_file)
+else:
+  state = torch.load(model_file, map_location="cpu")
 # t = Trial(model).load_state_dict(state)
 model.load_state_dict(state["model"])
 train_ds = FashionMNIST("fashdata", train=True, download=True, transform=ToTensor())

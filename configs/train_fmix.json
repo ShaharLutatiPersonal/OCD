@@ -6,12 +6,12 @@
         "loss": "ce"
     },
     "model": {
-        "weight_name": "layer1.0.conv1",
+        "weight_name": "linear",
         "name":"fmix"
     },
     "checkpoint": {
         "checkpoint_path": "./checkpoints-fashion.pt",
-        "n_checkpoint": 1
+        "n_checkpoint": 5
     },
     "diffusion": {
         "dropout": 0.4,
@@ -20,13 +20,13 @@
         "nch": 128,
         "out_ch": 1,
         "ch_mult": [1, 1, 2, 2, 4, 4],
-        "dim_in": 84,
-        "dim_lat_out": 120,
+        "dim_in": 10,
+        "dim_lat_out": 512,
         "dim_output": 10,
         "scale":{
-            "ch": 128, 
-            "in_dim": 84,
-            "out_dim": 120
+            "ch": 128,
+            "in_dim": 10,
+            "out_dim": 512
         }
 
     },

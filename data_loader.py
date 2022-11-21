@@ -12,6 +12,9 @@ import Lenet5
 from torch.utils.data import DataLoader
 from torchvision.transforms import ToTensor
 from copy import deepcopy
+import FMix
+
+
 def wrapper_dataset(config, args, device):
     if args.datatype == 'tinynerf':
         
@@ -94,6 +97,7 @@ def wrapper_dataset(config, args, device):
             batch = {'input':train_x,'output':train_label}
             test_ds.append(deepcopy(batch))
     elif args.datatype == 'fmix':
+        model = FMix.ResNet18(nc=1)
         train_transform = transforms.Compose(
                     [
                     transforms.ToTensor()

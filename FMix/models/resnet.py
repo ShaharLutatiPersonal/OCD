@@ -13,6 +13,8 @@ PreActBlock and PreActBottleneck module is from the later paper:
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from copy import deepcopy
+
 
 from torch.autograd import Variable
 
@@ -167,10 +169,11 @@ class ResNet(nn.Module):
         if lout > 4:
             # out = F.avg_pool2d(out, 4)
             out = F.adaptive_avg_pool2d(out, (1, 1))
-
             out = out.view(out.size(0), -1)
+            latent_in = deepcopy(out.detach())
             out = self.linear(out)
-        return out
+            latent = deepcopy(out.detach())
+        return out,(latent, latent_in)
 
 
 def ResNet18(num_classes=10, nc=3):
