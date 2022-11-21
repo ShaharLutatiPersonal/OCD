@@ -9,7 +9,8 @@ class block_entropy_calc(nn.Module):
         self.net = network
         self.state_dict = state_dict
         self.net = self.net.to(device)
-        self.gen_inputs = input_generator
+        self.gen_inputs = iter(input_generator)
+        self.loader = input_generator
         self.loss = loss_func
         self.names = [n for n,p in self.net.named_modules() if hasattr(p,'weight')]
         self.monte_carlo_num = monte_carlo_num
@@ -48,17 +49,24 @@ class block_entropy_calc(nn.Module):
 
 
     def forward(self,specific_blk = None):
+        num_layer= len(self.names)
         with torch.no_grad():
             if specific_blk is not None:
                 self.names = [self.names[specific_blk]]
             for i,block in enumerate(self.names):
+                print(f"layer {i} out of {num_layer}")
                 self.init_net()
                 for epoch in range(self.monte_carlo_num):
+                    print(f"epoch {epoch} out of {self.monte_carlo_num}")
                     self.epoch = epoch
                     self.change_block_weights(block)
                     loss = []
                     for b in range(self.batch_size):
-                        gen_input,c = next(self.gen_inputs) # This part should be changed for other architecture
+                        try:
+                            gen_input,c = next(self.gen_inputs) # This part should be changed for other architecture
+                        except StopIteration:
+                            self.gen_inputs = iter(self.loader)
+                            gen_input,c = next(self.gen_inputs)
                         output = self.net(gen_input) # This part should be changed for other architecture
                         loss.append(self.loss(output,c).item())
                     self.H_max[i] = self.calculate_Hmax(loss,self.testing_vec,self.H_max[i])
