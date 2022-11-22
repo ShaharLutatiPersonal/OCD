@@ -10,7 +10,7 @@
         "name":"fmix"
     },
     "checkpoint": {
-        "checkpoint_path": "./checkpoints-fashion.pt",
+        "checkpoint_path": "./checkpoints-fashion/",
         "n_checkpoint": 5
     },
     "diffusion": {
