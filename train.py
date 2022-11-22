@@ -66,12 +66,15 @@ def train(args, config, optimizer, optimizer_scale,
         print('precomputation finished')
     print('Start Training')
     for epoch in range(epochs):
+        print(f'epoch {epoch}')
         avg_loss = 0
         count = 0
         optimizer.zero_grad()
         difflosslogger = 0
         optimizer_scale.zero_grad()
         for idx, batch in enumerate(train_loader):
+            if(idx%1000 == 0):
+                print(f"batch {idx}")
             optimizer_scale.zero_grad()
             batch['input'] = batch['input'].to(device)
             batch['output'] = batch['output'].to(device)
@@ -130,6 +133,7 @@ def train(args, config, optimizer, optimizer_scale,
                         )
             optimizer_scale.step()
             optimizer_scale.zero_grad()
+        print('Check checkpoints')
         if ((epoch + 1) % n_checkpoint == 0) or (epoch + 1 == epochs):
             print(f'epoch {epoch+1} save checkpoints: model_checkpoint_epoch{epoch}_step{step}_data{args.datatype}, scale_model_checkpoint_epoch{epoch}_loss{step}_data{args.datatype}')
             torch.save(ema_helper.state_dict(),checkpoint_path+f'model_checkpoint_epoch{epoch}_step{step}_data{args.datatype}.pt')

@@ -72,6 +72,7 @@ def wrapper_dataset(config, args, device):
         batch['input'] = testpose
         batch['output'] = testimg
         test_ds = [batch]
+        
     elif args.datatype == 'mnist':
         model = Lenet5.NetOriginal()
         train_transform = transforms.Compose(
@@ -97,7 +98,7 @@ def wrapper_dataset(config, args, device):
             batch = {'input':train_x,'output':train_label}
             test_ds.append(deepcopy(batch))
     elif args.datatype == 'fmix':
-        model = FMix.ResNet18(nc=1)
+        model = FMix.ResNet18(nc=1) # greyscale
         train_transform = transforms.Compose(
                     [
                     transforms.ToTensor()
