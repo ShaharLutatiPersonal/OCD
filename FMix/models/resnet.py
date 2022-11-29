@@ -48,6 +48,37 @@ class BasicBlock(nn.Module):
         return out
 
 
+class PreActBlockReturnLatent(nn.Module):
+    '''Pre-activation version of the BasicBlock.'''
+    expansion = 1
+
+    def __init__(self, in_planes, planes, stride=1):
+        super(PreActBlockReturnLatent, self).__init__()
+        self.bn1 = nn.BatchNorm2d(in_planes)
+        self.conv1 = conv3x3(in_planes, planes, stride)
+        self.bn2 = nn.BatchNorm2d(planes)
+        self.conv2 = conv3x3(planes, planes)
+
+        self.shortcut = nn.Sequential()
+        if stride != 1 or in_planes != self.expansion * planes:
+            self.shortcut = nn.Sequential(
+                nn.Conv2d(in_planes, self.expansion * planes, kernel_size=1, stride=stride, bias=False)
+            )
+
+    def forward(self, x):
+        if(type(x) is tuple):
+            x = x[0]
+        out = F.relu(self.bn1(x))
+        shortcut = self.shortcut(out)
+        out = self.conv1(out)
+        latent_in = deepcopy(out.detach())
+        out = F.relu(self.bn2(out))
+        latent = deepcopy(out.detach())
+        out = self.conv2(out)
+        out += shortcut
+        return out,(latent, latent_in)
+
+
 class PreActBlock(nn.Module):
     '''Pre-activation version of the BasicBlock.'''
     expansion = 1
@@ -141,7 +172,7 @@ class ResNet(nn.Module):
         self.layer1 = self._make_layer(block, 64, num_blocks[0], stride=1)
         self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2)
         self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
+        self.layer4 = self._make_layer(PreActBlockReturnLatent, 512, num_blocks[3], stride=2)
         self.linear = nn.Linear(512 * block.expansion, num_classes)
 
     def _make_layer(self, block, planes, num_blocks, stride):
@@ -165,14 +196,15 @@ class ResNet(nn.Module):
         if lin < 4 and lout > 2:
             out = self.layer3(out)
         if lin < 5 and lout > 3:
-            out = self.layer4(out)
+            out, h = self.layer4(out)
         if lout > 4:
             # out = F.avg_pool2d(out, 4)
             out = F.adaptive_avg_pool2d(out, (1, 1))
             out = out.view(out.size(0), -1)
-            latent_in = deepcopy(out.detach())
             out = self.linear(out)
-            latent = deepcopy(out.detach())
+            latent, latent_in = h
+            latent = latent.reshape([1,8192])
+            latent_in = latent_in.reshape([1,8192])
         return out,(latent, latent_in)
 
 

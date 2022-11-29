@@ -6,7 +6,7 @@
         "loss": "ce"
     },
     "model": {
-        "weight_name": "linear",
+        "weight_name": "layer4.1.bn2",
         "name":"fmix"
     },
     "checkpoint": {
@@ -20,13 +20,13 @@
         "nch": 128,
         "out_ch": 1,
         "ch_mult": [1, 1, 2, 2, 4, 4],
-        "dim_in": 10,
-        "dim_lat_out": 512,
+        "dim_in": 8192,
+        "dim_lat_out": 8192,
         "dim_output": 10,
         "scale":{
             "ch": 128,
-            "in_dim": 10,
-            "out_dim": 512
+            "in_dim": 8192,
+            "out_dim": 8192
         }
 
     },

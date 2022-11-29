@@ -106,7 +106,7 @@ def wrapper_dataset(config, args, device):
         train_ds = FashionMNIST("fashdata", train=True, download=True, transform=ToTensor())
         test_ds = FashionMNIST("fashdata", train=False, download=True, transform=ToTensor())
         train_loader = DataLoader(train_ds, batch_size=1, shuffle=True)
-        test_loader = DataLoader(train_ds,batch_size=1)
+        test_loader = DataLoader(test_ds,batch_size=1)
 
         # train_dataset = mnist.MNIST(
         #         "\data\mnist", train=True, download=True, transform=ToTensor())
